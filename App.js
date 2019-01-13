@@ -7,23 +7,82 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
-
-const instructions = Platform.select({
-    ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-    android:
-        'Double tap R on your keyboard to reload,\n' +
-        'Shake or press menu button for dev menu',
-});
+import {
+    StyleSheet,
+    View,
+    FlatList,
+    UIManager,
+    LayoutAnimation
+} from 'react-native';
+import SwipeButtonCustom from './src/swipeButton';
 
 type Props = {};
-export default class App extends Component<Props> {
+
+type States = {
+    swipes: Array<number>
+}
+
+export default class App extends Component<Props, States> {
+
+    constructor(props: Props) {
+        super(props);
+        UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+        let swipes: Array<number> = [];
+        for (let i = 0; i < 10; i++) {
+            swipes.push(i);
+        }
+        this.state = {
+            swipes
+        };
+    }
+
+    _removeItem(value: number) {
+        let {
+            swipes
+        } = this.state;
+        let removeIndex = swipes.findIndex((arrayValue) => arrayValue === value);
+        swipes.splice(removeIndex, 1);
+
+        this.setState({
+            swipes
+        });
+
+        LayoutAnimation.configureNext({
+            duration: 300,
+            create: {
+                type: LayoutAnimation.Types.linear,      
+                property: LayoutAnimation.Properties.opacity
+            },
+            update: {
+                type: LayoutAnimation.Types.linear,      
+                property: LayoutAnimation.Properties.opacity
+            }
+        });
+    }
+
     render() {
+
         return (
-            <View style={styles.container}>
-                <Text style={styles.welcome}>Welcome to React Native!</Text>
-                <Text style={styles.instructions}>To get started, edit App.js</Text>
-                <Text style={styles.instructions}>{instructions}</Text>
+            <View style={[StyleSheet.absoluteFill, styles.container]}>
+                <View
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                    }}
+                >
+                    <FlatList
+                        style={{
+                            flex: 1
+                        }}
+                        contentContainerStyle={{
+                            width: '100%',
+                            marginVertical: 10,
+                        }}
+                        data={this.state.swipes}
+                        keyExtractor={(item: number, index: number) => item + ''}
+                        renderItem={({item}) => <SwipeButtonCustom value={item} onDelete={(v) => this._removeItem(v)} />}
+                    />
+                </View>
             </View>
         );
     }
@@ -31,19 +90,7 @@ export default class App extends Component<Props> {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF',
-    },
-    welcome: {
-        fontSize: 20,
-        textAlign: 'center',
-        margin: 10,
-    },
-    instructions: {
-        textAlign: 'center',
-        color: '#333333',
-        marginBottom: 5,
-    },
+        backgroundColor: '#faf9f9',
+        paddingTop: 40,
+    }
 });
