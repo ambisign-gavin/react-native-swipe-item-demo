@@ -18,8 +18,13 @@ import SwipeButtonCustom from './src/swipeButton';
 
 type Props = {};
 
+export type ItemInfo = {|
+    id: number, 
+    name: string
+|}
+
 type States = {
-    swipes: Array<number>
+    itemInfos: Array<ItemInfo>
 }
 
 export default class App extends Component<Props, States> {
@@ -27,24 +32,30 @@ export default class App extends Component<Props, States> {
     constructor(props: Props) {
         super(props);
         UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
-        let swipes: Array<number> = [];
+
+        let itemInfos: Array<ItemInfo> = [];
         for (let i = 0; i < 10; i++) {
-            swipes.push(i);
+            itemInfos.push({
+                id: i,
+                name: `Swipe item ${i}`,
+            });
         }
+
         this.state = {
-            swipes
+            itemInfos
         };
     }
 
-    _removeItem(value: number) {
+    _removeItem(id: number) {
         let {
-            swipes
+            itemInfos
         } = this.state;
-        let removeIndex = swipes.findIndex((arrayValue) => arrayValue === value);
-        swipes.splice(removeIndex, 1);
+
+        let removeIndex = itemInfos.findIndex((itemInfo) => itemInfo.id === id);
+        itemInfos.splice(removeIndex, 1);
 
         this.setState({
-            swipes
+            itemInfos
         });
 
         LayoutAnimation.configureNext({
@@ -58,6 +69,16 @@ export default class App extends Component<Props, States> {
                 property: LayoutAnimation.Properties.opacity
             }
         });
+    }
+
+    _renderFlatListItem(itemInfo: ItemInfo): JSX.Element {
+        return (
+            <SwipeButtonCustom 
+                text={itemInfo.name} 
+                id={itemInfo.id} 
+                onDelete={(v) => this._removeItem(v)} 
+            />
+        );
     }
 
     render() {
@@ -78,9 +99,9 @@ export default class App extends Component<Props, States> {
                             width: '100%',
                             marginVertical: 10,
                         }}
-                        data={this.state.swipes}
-                        keyExtractor={(item: number, index: number) => item + ''}
-                        renderItem={({item}) => <SwipeButtonCustom value={item} onDelete={(v) => this._removeItem(v)} />}
+                        data={this.state.itemInfos}
+                        keyExtractor={(item: ItemInfo, index: number) => item.id + ''}
+                        renderItem={({item}) => this._renderFlatListItem(item)}
                     />
                 </View>
             </View>

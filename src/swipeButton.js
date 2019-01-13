@@ -9,8 +9,9 @@ import { SwipeItem, SwipeButtonsContainer } from 'react-native-swipe-item';
 
 type Props = {
     dafaultStared?: boolean,
-    onDelete: (value: number) => mixed,
-    value: number,
+    onDelete: (id: number) => mixed,
+    id: number,
+    text: string,
 }
 
 type States = {
@@ -64,7 +65,7 @@ export default class SwipeButtonCustom extends React.Component<Props, States> {
     _renderRightButtons(): JSX.Element {
         const {
             onDelete,
-            value,
+            id,
         } = this.props;
 
         return (
@@ -85,7 +86,7 @@ export default class SwipeButtonCustom extends React.Component<Props, States> {
                         backgroundColor: '#db2d43',
                         borderRadius: 5,
                     }}
-                    onPress={() => onDelete(value)}
+                    onPress={() => onDelete(id)}
                 >
                     <Image
                         source={rubbish}
@@ -100,6 +101,10 @@ export default class SwipeButtonCustom extends React.Component<Props, States> {
     }
 
     render() {
+        const {
+            text
+        } = this.props;
+        
         return (
             <SwipeItem
                 style={styles.button}
@@ -109,7 +114,7 @@ export default class SwipeButtonCustom extends React.Component<Props, States> {
                 containerView={ViewOverflow}
             >
                 <Text>
-                    Swipe me!
+                    {text}
                 </Text>
             </SwipeItem>
         );
