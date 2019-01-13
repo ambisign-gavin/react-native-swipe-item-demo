@@ -9,16 +9,20 @@ import { SwipeItem, SwipeButtonsContainer } from 'react-native-swipe-item';
 
 type Props = {
     dafaultStared?: boolean,
-    onDelete: (id: number) => mixed,
+    onDelete: (id: number, swipeButton: SwipeButton) => mixed,
     id: number,
     text: string,
+    onSwipeInitial: (swipeButton: SwipeButton) => void,
+    oButtonsShowed: (swipeButton: SwipeButton) => void,
 }
 
 type States = {
     stared: boolean,
 }
 
-export default class SwipeButtonCustom extends React.Component<Props, States> {
+export default class SwipeButton extends React.Component<Props, States> {
+
+    _swipeItem: ?SwipeItem;
 
     state = {
         stared: this.props.dafaultStared || false,
@@ -62,6 +66,10 @@ export default class SwipeButtonCustom extends React.Component<Props, States> {
         );
     }
 
+    close() {
+        this._swipeItem && this._swipeItem.close();
+    }
+
     _renderRightButtons(): JSX.Element {
         const {
             onDelete,
@@ -86,7 +94,7 @@ export default class SwipeButtonCustom extends React.Component<Props, States> {
                         backgroundColor: '#db2d43',
                         borderRadius: 5,
                     }}
-                    onPress={() => onDelete(id)}
+                    onPress={() => onDelete(id, this)}
                 >
                     <Image
                         source={rubbish}
@@ -102,16 +110,23 @@ export default class SwipeButtonCustom extends React.Component<Props, States> {
 
     render() {
         const {
-            text
+            text,
+            onSwipeInitial,
+            oButtonsShowed,
         } = this.props;
-        
+
         return (
             <SwipeItem
+                ref={(item) => this._swipeItem = item}
                 style={styles.button}
                 swipeContainerStyle={styles.swipeContentContainerStyle}
                 leftButtons={this._renderLeftButtons()}
                 rightButtons={this._renderRightButtons()}
                 containerView={ViewOverflow}
+                onSwipeInitial={() => onSwipeInitial(this)}
+                onLeftButtonsShowed={() => oButtonsShowed(this)}
+                onRightButtonsShowed={() => oButtonsShowed(this)}
+                onButtonsClosed={() => console.log('onButtonsClosed')}
             >
                 <Text>
                     {text}

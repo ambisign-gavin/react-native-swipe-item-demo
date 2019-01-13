@@ -14,7 +14,7 @@ import {
     UIManager,
     LayoutAnimation
 } from 'react-native';
-import SwipeButtonCustom from './src/swipeButton';
+import SwipeButton from './src/swipeButton';
 
 type Props = {};
 
@@ -28,6 +28,8 @@ type States = {
 }
 
 export default class App extends Component<Props, States> {
+
+    _showingSwipeButton: ?SwipeButton = null;
 
     constructor(props: Props) {
         super(props);
@@ -46,10 +48,14 @@ export default class App extends Component<Props, States> {
         };
     }
 
-    _removeItem(id: number) {
+    _removeItem(id: number, swipeButton: SwipeButton) {
         let {
             itemInfos
         } = this.state;
+
+        if (swipeButton === this._showingSwipeButton) {
+            this._showingSwipeButton = null;
+        }
 
         let removeIndex = itemInfos.findIndex((itemInfo) => itemInfo.id === id);
         itemInfos.splice(removeIndex, 1);
@@ -71,12 +77,25 @@ export default class App extends Component<Props, States> {
         });
     }
 
+    _handleSwipeItemButtonsShowed(swipeButton: SwipeButton) {
+        this._showingSwipeButton = swipeButton;
+    }
+
+    _handleSwipeInitial(swipeButton: SwipeButton) {
+        if (swipeButton !== this._showingSwipeButton && this._showingSwipeButton != null) {
+            this._showingSwipeButton.close();
+            this._showingSwipeButton = null;
+        }
+    }
+
     _renderFlatListItem(itemInfo: ItemInfo): JSX.Element {
         return (
-            <SwipeButtonCustom 
+            <SwipeButton 
                 text={itemInfo.name} 
                 id={itemInfo.id} 
-                onDelete={(v) => this._removeItem(v)} 
+                onDelete={(id, button) => this._removeItem(id, button)} 
+                onSwipeInitial={(button) => this._handleSwipeInitial(button)}
+                oButtonsShowed={(button) => this._handleSwipeItemButtonsShowed(button)}
             />
         );
     }
