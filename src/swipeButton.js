@@ -126,7 +126,7 @@ export default class SwipeButton extends React.Component<Props, States> {
                 onSwipeInitial={() => onSwipeInitial(this)}
                 onLeftButtonsShowed={() => oButtonsShowed(this)}
                 onRightButtonsShowed={() => oButtonsShowed(this)}
-                onButtonsClosed={() => console.log('onButtonsClosed')}
+                onMovedToOrigin={() => console.log('onMovedToOrigin')}
             >
                 <Text>
                     {text}
